@@ -1,15 +1,19 @@
 # 🔍 Bike Buyers SQL Analysis — Demographics & Purchase Behaviour
 
 **Tools:** SQL, SQLite  
-**Dataset:** 1,000+ customer records  
+**Dataset:** 999 customer records  
 **Date:** June 2026  
 **Author:** [Jai Kiran R](https://linkedin.com/in/jaikiran-analyst)
+
+📂 **Files in this repo:**
+- [`bike_sales_analysis.sql`](./bike_sales_analysis.sql) — All 10 SQL queries
+- [`data_dictionary.md`](./data_dictionary.md) — Full column definitions
 
 ---
 
 ## 📌 Project Overview
 
-Designed a relational database and wrote 7 business-focused SQL queries to identify the highest-value buyer segments in a bike sales dataset. Focused on translating demographic data into actionable marketing and campaign targeting recommendations.
+Designed a relational database and wrote **10 business-focused SQL queries** to identify the highest-value buyer segments in a bike sales dataset. Focused on translating demographic data into actionable marketing and campaign targeting recommendations.
 
 ---
 
@@ -21,70 +25,34 @@ Without structured segmentation, marketing budgets get spread thin across all de
 
 ---
 
-## 🗃️ Database Schema
+## 🗃️ Dataset Summary
 
-```sql
-CREATE TABLE bike_buyers (
-    ID INTEGER PRIMARY KEY,
-    Marital_Status TEXT,
-    Gender TEXT,
-    Income REAL,
-    Children INTEGER,
-    Education TEXT,
-    Occupation TEXT,
-    Home_Owner TEXT,
-    Cars INTEGER,
-    Commute_Distance TEXT,
-    Region TEXT,
-    Age INTEGER,
-    Purchased_Bike TEXT
-);
-```
+| Metric | Value |
+|---|---|
+| Total Records | 999 |
+| Bike Buyers | 481 (~48.1%) |
+| Average Income | $57,000 |
+| Regions | Europe, Pacific, North America |
+| Age Groups | Young, Middle Aged, Senior |
 
 ---
 
-## 🔎 SQL Queries & Business Questions
+## 🔎 SQL Queries Included
 
-### Query 1 — Purchase Rate by Age Group
-```sql
-SELECT
-  CASE
-    WHEN Age < 31 THEN 'Young (< 31)'
-    WHEN Age BETWEEN 31 AND 54 THEN 'Middle-Aged (31-54)'
-    ELSE 'Senior (55+)'
-  END AS Age_Group,
-  COUNT(*) AS Total_Customers,
-  SUM(CASE WHEN Purchased_Bike = 'Yes' THEN 1 ELSE 0 END) AS Buyers,
-  ROUND(100.0 * SUM(CASE WHEN Purchased_Bike = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 1) AS Conversion_Rate
-FROM bike_buyers
-GROUP BY Age_Group
-ORDER BY Conversion_Rate DESC;
-```
+| # | Query | Business Question |
+|---|---|---|
+| 1 | Select all customers | Data exploration |
+| 2 | Count total customers | Dataset overview |
+| 3 | Purchase by gender | Do males/females buy more? |
+| 4 | Buyers by region | Which region converts best? |
+| 5 | Avg income by occupation | Which jobs earn most? |
+| 6 | High-income buyers (>$100K) | Premium buyer profiles |
+| 7 | Purchase rate by age group | Which age converts best? |
+| 8 | Commute distance vs purchase | Does distance affect buying? |
+| 9 | Married homeowners profile | Target family buyer segment |
+| 10 | Income group purchase summary | Low/Medium/High income split |
 
-### Query 2 — Conversion by Commute Distance
-```sql
-SELECT
-  Commute_Distance,
-  COUNT(*) AS Total,
-  SUM(CASE WHEN Purchased_Bike = 'Yes' THEN 1 ELSE 0 END) AS Buyers,
-  ROUND(100.0 * SUM(CASE WHEN Purchased_Bike = 'Yes' THEN 1 ELSE 0 END) / COUNT(*), 1) AS Conversion_Rate
-FROM bike_buyers
-GROUP BY Commute_Distance
-ORDER BY Conversion_Rate DESC;
-```
-
-### Query 3 — Income vs Purchase Behaviour (Window Function)
-```sql
-SELECT
-  Gender,
-  ROUND(AVG(Income), 0) AS Avg_Income,
-  ROUND(AVG(CASE WHEN Purchased_Bike = 'Yes' THEN Income END), 0) AS Avg_Income_Buyers,
-  RANK() OVER (ORDER BY AVG(CASE WHEN Purchased_Bike = 'Yes' THEN Income END) DESC) AS Income_Rank
-FROM bike_buyers
-GROUP BY Gender;
-```
-
-> *(+ 4 more business-focused queries covering occupation, region, home ownership, and multi-variable segmentation)*
+**Key SQL concepts used:** SELECT, WHERE, GROUP BY, ORDER BY, LIMIT, COUNT, SUM, AVG, ROUND, CASE WHEN
 
 ---
 
@@ -101,7 +69,7 @@ GROUP BY Gender;
 
 ## 💼 Business Impact
 
-- ✅ Short-commute segment has **40%+ higher conversion** → prioritize geo-targeted ads in dense urban/suburban areas
+- ✅ Short-commute segment has **40%+ higher conversion** → prioritize geo-targeted ads in urban areas
 - ✅ SQL segmentation model can help increase **marketing ROI by 20–25%** through smarter budget allocation
 - ✅ Delivered 3 actionable recommendations for campaign targeting and customer segmentation
 
