@@ -6,14 +6,14 @@
 **Author:** [Jai Kiran R](https://linkedin.com/in/jaikiran-analyst)
 
 📂 **Files in this repo:**
-- [`bike_sales_analysis.sql`](./bike_sales_analysis.sql) — All 10 SQL queries
+- [`bike_sales_analysis.sql`](./bike_sales_analysis.sql) — 14 SQL queries (Basic → Advanced)
 - [`data_dictionary.md`](./data_dictionary.md) — Full column definitions
 
 ---
 
 ## 📌 Project Overview
 
-Designed a relational database and wrote **10 business-focused SQL queries** to identify the highest-value buyer segments in a bike sales dataset. Focused on translating demographic data into actionable marketing and campaign targeting recommendations.
+Designed a relational database and wrote **14 business-focused SQL queries** progressing from basic aggregations to advanced Window Functions, CTEs, and Subqueries. Focused on translating demographic data into actionable marketing and campaign targeting recommendations.
 
 ---
 
@@ -39,20 +39,47 @@ Without structured segmentation, marketing budgets get spread thin across all de
 
 ## 🔎 SQL Queries Included
 
-| # | Query | Business Question |
+| # | Query | Concept |
 |---|---|---|
-| 1 | Select all customers | Data exploration |
-| 2 | Count total customers | Dataset overview |
-| 3 | Purchase by gender | Do males/females buy more? |
-| 4 | Buyers by region | Which region converts best? |
-| 5 | Avg income by occupation | Which jobs earn most? |
-| 6 | High-income buyers (>$100K) | Premium buyer profiles |
-| 7 | Purchase rate by age group | Which age converts best? |
-| 8 | Commute distance vs purchase | Does distance affect buying? |
-| 9 | Married homeowners profile | Target family buyer segment |
-| 10 | Income group purchase summary | Low/Medium/High income split |
+| 1 | Purchase breakdown by gender | GROUP BY, CASE WHEN, AVG |
+| 2 | Buyers by region | GROUP BY, SUM, ORDER BY |
+| 3 | Avg income by occupation | GROUP BY, AVG |
+| 4 | High-income buyers (>$100K) | WHERE filter, ORDER BY |
+| 5 | Purchase rate by age group | Conversion rate calculation |
+| 6 | Commute distance vs purchase | GROUP BY, conversion rate |
+| 7 | Income group purchase summary | GROUP BY, multi-metric |
+| 8 | **Income rank within occupation** | **RANK() OVER (PARTITION BY)** |
+| 9 | **Running buyer total by region** | **SUM() OVER (PARTITION BY ORDER BY)** |
+| 10 | **Customer vs peer income comparison** | **AVG() OVER (PARTITION BY), CASE WHEN** |
+| 11 | **High-converting segment deep dive** | **CTE — WITH ... AS (...)** |
+| 12 | **Occupation priority targeting** | **CTE with derived classification** |
+| 13 | **Above-average earner conversion** | **Subquery in WHERE clause** |
+| 14 | **Regions beating average buyer rate** | **Subquery in HAVING clause** |
 
-**Key SQL concepts used:** SELECT, WHERE, GROUP BY, ORDER BY, LIMIT, COUNT, SUM, AVG, ROUND, CASE WHEN
+---
+
+## ⚙️ SQL Concepts Demonstrated
+
+```sql
+-- Window Functions
+RANK() OVER (PARTITION BY "Occupation" ORDER BY "Income" DESC)
+SUM(...) OVER (PARTITION BY "Region" ORDER BY "Income")
+AVG("Income") OVER (PARTITION BY "Occupation")
+
+-- CTE (Common Table Expression)
+WITH high_converting_segments AS (
+    SELECT ...
+    FROM bike_sales
+    GROUP BY "Commute Distance", "Age Group"
+)
+SELECT * FROM high_converting_segments WHERE conversion_rate_pct > 55;
+
+-- Subquery in WHERE
+WHERE "Income" > (SELECT AVG("Income") FROM bike_sales)
+
+-- Subquery in HAVING
+HAVING conversion_rate_pct > (SELECT ROUND(100.0 * SUM(...) / COUNT(*), 1) FROM bike_sales)
+```
 
 ---
 
@@ -64,14 +91,16 @@ Without structured segmentation, marketing budgets get spread thin across all de
 | **Age Group** | Middle-aged (31–54) had the highest absolute buyer count |
 | **Income** | Buyers averaged significantly higher income than non-buyers across all genders |
 | **Occupation** | Professionals and skilled manual workers had the strongest conversion rates |
+| **Peer Comparison** | Above-average earners within their occupation group converted at higher rates |
 
 ---
 
 ## 💼 Business Impact
 
 - ✅ Short-commute segment has **40%+ higher conversion** → prioritize geo-targeted ads in urban areas
-- ✅ SQL segmentation model can help increase **marketing ROI by 20–25%** through smarter budget allocation
-- ✅ Delivered 3 actionable recommendations for campaign targeting and customer segmentation
+- ✅ Window function analysis reveals **income rank within occupation** matters more than absolute income
+- ✅ CTE-based segmentation identifies specific commute + age combinations converting above 55%
+- ✅ Subquery confirms above-average earners convert at higher rates — validates premium targeting strategy
 
 ---
 
@@ -79,7 +108,7 @@ Without structured segmentation, marketing budgets get spread thin across all de
 
 1. **Target short-commute urban customers** with “last-mile commute” messaging in city-centre ad placements
 2. **Focus budget on middle-aged professionals** — highest volume + strong income profile
-3. **Upsell to existing car owners** with 1–2 cars — data shows they buy bikes as a commute supplement
+3. **Use peer-relative income targeting** — customers earning above their occupation average show stronger purchase intent
 
 ---
 
